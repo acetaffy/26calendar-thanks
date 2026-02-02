@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>26台历支持记录 | 感谢页</title>
+  <meta name="description" content="此次创作支持记录与感谢展示页" />
+  <style>
+    /* ===== Base ===== */
+    :root{
+      /* Warm brown palette */
+      --bg1:#1a120c;
+      --bg2:#2a1b10;
+      --bg3:#3a2313;
+
+      --glass: rgba(255,255,255,.08);
+      --glass2: rgba(255,255,255,.12);
+      --stroke: rgba(255,255,255,.14);
+
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --muted2: rgba(255,255,255,.56);
+
+      /* Warm accents */
+      --accent1:#ffd6a5;  /* honey */
+      --accent2:#f4c07a;  /* caramel */
+      --accent3:#e8a87c;  /* toasted peach */
+
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft Yahei", sans-serif;
+      color:var(--text);
+      overflow-x:hidden;
+
+      background:
+        radial-gradient(1200px 800px at 16% 18%, rgba(255,214,165,.18), transparent 62%),
+        radial-gradient(900px 650px at 84% 22%, rgba(244,192,122,.14), transparent 60%),
+        radial-gradient(1000px 800px at 50% 88%, rgba(232,168,124,.12), transparent 62%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+    }
+
+    /* ===== Ambient sparkle / grain ===== */
+    .grain{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.10;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+    }
+
+    /* ===== Layout ===== */
+    .wrap{
+      width:min(1100px, 92vw);
+      margin: 34px auto 90px;
+      position:relative;
+      z-index:2;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom: 18px;
+    }
+
+    .title{
+      display:flex; flex-direction:column; gap:10px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border-radius: 999px;
+      width:max-content;
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
+    }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255,255,255,.2) 45%, rgba(255,255,255,.05));
+      box-shadow: 0 0 18px rgba(255,214,165,.45);
+    }
+    h1{
+      margin:0;
+      font-size: clamp(26px, 3.6vw, 44px);
+      letter-spacing:.2px;
+      line-height: 1.1;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      max-width: 52ch;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+      margin-top: 14px;
+    }
+    @media (max-width: 900px){
+      header{ align-items:flex-start; }
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      position:relative;
+      border-radius: var(--radius);
+      border: 1px solid var(--stroke);
+      background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+
+    .card .inner{ padding: 18px 18px 16px; }
+    .kicker{
+      font-size: 12px;
+      color: var(--muted2);
+      letter-spacing:.3px;
+      margin:0 0 10px;
+    }
+    .big{
+      font-size: clamp(18px, 2.4vw, 22px);
+      margin:0 0 10px;
+      line-height:1.35;
+    }
+
+    /* ===== Progress Bar ===== */
+    .progressWrap{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      overflow: visible;
+      position:relative;
+    }
+
+    .progressTop{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .progressTop .label{
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* The money text becomes the hover trigger */
+    .moneyTrigger{
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      cursor: default;
+      user-select:none;
+    }
+    .moneyTrigger:hover{
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+    }
+    .moneyTrigger:focus{
+      outline: none;
+      border-color: rgba(255,255,255,.26);
+      box-shadow: 0 0 0 3px rgba(255,214,165,.12);
+    }
+
+    .evidencePopup{
+      position:absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      width: min(360px, 80vw);
+      padding: 12px 12px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(24,16,10,.78);
+      box-shadow: 0 24px 70px rgba(0,0,0,.50);
+      backdrop-filter: blur(14px);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(6px) scale(.98);
+      transition: opacity .16s ease, transform .16s ease;
+      z-index: 10;
+    }
+
+    /* show on hover or keyboard focus */
+    .moneyTrigger:hover .evidencePopup,
+    .moneyTrigger:focus-within .evidencePopup{
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0px) scale(1);
+    }
+
+    /* small caret */
+    .evidencePopup::before{
+      content:"";
+      position:absolute;
+      right: 14px;
+      top: -7px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: rgba(24,16,10,.78);
+      border-left: 1px solid rgba(255,255,255,.14);
+      border-top: 1px solid rgba(255,255,255,.14);
+    }
+
+    .popupTitle{
+      font-size: 13px;
+      color: rgba(255,255,255,.92);
+      margin: 0 0 4px;
+    }
+    .popupHint{
+      font-size: 12px;
+      color: rgba(255,255,255,.62);
+      margin: 0 0 8px;
+      line-height: 1.55;
+    }
+    .popupImgWrap{
+      width: 100%;
+      border-radius: 12px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+    }
+    .popupImgWrap img{
+      width: 100%;
+      height: auto;
+      display:block;
+    }
+
+    .bar{
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      position:relative;
+      overflow:hidden; /* ok because popup is NOT inside bar anymore */
+    }
+
+    .fill{
+      height:100%;
+      width: 0%;
+      border-radius: 999px;
+      background:
+        linear-gradient(90deg, rgba(255,214,165,.95), rgba(244,192,122,.92), rgba(232,168,124,.90));
+      box-shadow: 0 0 28px rgba(255,214,165,.18);
+      transform-origin:left center;
+      position:relative;
+      will-change: width, transform;
+    }
+
+    .shine{
+      position:absolute;
+      inset:-40px -70px;
+      background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,.22) 50%, transparent 60%);
+      transform: translateX(-35%) rotate(0deg);
+      animation: shine 2.8s ease-in-out infinite;
+      pointer-events:none;
+      mix-blend-mode:screen;
+    }
+    @keyframes shine{
+      0%{ transform: translateX(-45%) rotate(8deg); opacity:.2; }
+      50%{ transform: translateX(35%) rotate(8deg); opacity:.55; }
+      100%{ transform: translateX(85%) rotate(8deg); opacity:.18; }
+    }
+
+    .delta{
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .ctaRow{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+
+    .softBtn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+      font-size: 13px;
+    }
+    .softBtn{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    a.softBtn{
+        text-decoration: none;
+    }
+    .softBtn:hover{ transform: translateY(-1px) scale(1.02); background: rgba(255,255,255,.11); border-color: rgba(255,255,255,.24); }
+    .softBtn:active{ transform: translateY(1px) scale(.98); }
+
+    /* ===== Bubble Field ===== */
+    .bubbleStage{
+      height: 420px;
+      position:relative;
+      overflow:hidden;
+    }
+    @media (max-width: 900px){
+      .bubbleStage{ height: 380px; }
+    }
+
+    .bubbleHint{
+      color: var(--muted2);
+      font-size: 12px;
+      margin: 2px 0 0;
+    }
+
+    .bubble{
+      position:absolute;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      display:grid;
+      place-items:center;
+      border: 1px solid rgba(255,255,255,.20);
+      background:
+        radial-gradient(circle at 30% 28%, rgba(255,255,255,.36), rgba(255,255,255,.10) 38%, rgba(255,255,255,.05) 60%, rgba(255,255,255,.02));
+      box-shadow:
+        0 18px 50px rgba(0,0,0,.35),
+        inset 0 0 24px rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+      cursor:pointer;
+      transform: translate3d(0,0,0);
+      will-change: transform;
+      transition: transform .14s ease;
+      user-select:none;
+    }
+    .bubble:hover{ transform: scale(1.04); }
+    .bubble:active{ transform: scale(.96); }
+
+    .avatar{
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.18);
+      object-fit: cover;
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
+    }
+
+    .bubbleName{
+      position:absolute;
+      left: 50%;
+      bottom: -24px;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(255,255,255,.82);
+      text-shadow: 0 6px 20px rgba(0,0,0,.55);
+      white-space: nowrap;
+      pointer-events:none;
+      max-width: 12ch;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ===== Tooltip / Toast ===== */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(20px) scale(.98);
+      opacity: 0;
+      z-index: 50;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(24,16,10,.70);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      color: var(--text);
+      font-size: 13px;
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events:none;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0px) scale(1);
+    }
+
+    /* ===== Floating ambient bubbles ===== */
+    .ambient{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+      overflow:hidden;
+    }
+    .aBubble{
+      position:absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,214,165,.16), rgba(255,255,255,0) 62%);
+      filter: blur(1px);
+      opacity: .55;
+      mix-blend-mode: screen;
+      animation: drift linear infinite;
+    }
+    @keyframes drift{
+      0%{ transform: translate3d(0,0,0) scale(1); }
+      50%{ transform: translate3d(40px,-55px,0) scale(1.05); }
+      100%{ transform: translate3d(0,0,0) scale(1); }
+    }
+
+    /* ===== Footer ===== */
+    footer{
+      margin-top: 16px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.7;
+      padding: 0 6px;
+    }
+    .fine{
+      margin: 10px 0 0;
+      opacity: .88;
+    }
+
+    .sampleWrap{
+    max-width: 180px;
+    margin: 12px auto 0;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.04);
+    }
+
+    .sampleWrap img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="aBubble" style="left:-60px; top:120px; animation-duration: 12s;"></div>
+    <div class="aBubble" style="right:-80px; top:60px; animation-duration: 14s; width: 300px; height: 300px; opacity:.48;"></div>
+    <div class="aBubble" style="left:20%; bottom:-120px; animation-duration: 16s; width: 360px; height: 360px; opacity:.35;"></div>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <div class="badge">
+          <span class="dot"></span>
+          <span>2026AukiuQ版台历 · 感谢展示</span>
+        </div>
+        <h1>谢谢你让au陪伴在你的日子里</h1>
+        <p class="sub">
+          本次拼团的的支持进度与感谢名单~
+        </p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Left: Progress -->
+      <section class="card">
+        <div class="inner">
+          <p class="kicker">进度展示</p>
+          <p class="big">每售出一份台历，减去下印费用，au能收回平均约¥10的成本。</p>
+
+          <div class="progressWrap">
+            <div class="progressTop">
+              <div class="label">支持进度</div>
+
+              <!-- Hover target: money text -->
+              <div class="moneyTrigger" id="moneyTrigger" tabindex="0" aria-label="悬浮查看300元商用权购买凭证">
+                <span id="progressNums">¥0 / ¥0</span>
+
+                <div class="evidencePopup" id="evidencePopup" role="dialog" aria-label="商用权购买凭证预览">
+                  <div class="popupTitle">商用权购买凭证</div>
+                  <div class="popupHint">只要达成这个目标，au…au就能回本了！</div>
+                  <div class="popupImgWrap">
+                    <img id="evidenceImg" src="./evidence.jpg" alt="商用权购买凭证图片占位符" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bar" aria-label="progress bar">
+              <div class="fill" id="fill">
+                <div class="shine"></div>
+              </div>
+            </div>
+
+            <div class="delta">
+              <span id="deltaText">距离完成：¥0</span>
+              <span id="percentText">0%</span>
+            </div>
+
+            <div class="ctaRow">
+            <a
+                class="softBtn"
+                href="https://gf.bilibili.com/item/detail/1111347024"
+                target="_blank"
+                rel="noopener"
+            >
+                悄悄看看商店
+            </a>
+              <button class="softBtn" id="bumpBtn">轻轻捏捏团子</button>
+              <button class="softBtn" id="shuffleBtn">团子换个队形</button>
+            </div>
+          </div>
+
+            <footer>
+                <div class="fine">
+                    真的很感谢每一位支持au的AWA，是你们让au历出现在大家桌上的愿望成真了——
+                </div>
+
+                <div class="sampleWrap">
+                <img
+                    src="./calendar_sample.png"
+                    alt="台历样品图"
+                />
+                </div>
+            </footer>
+
+        </div>
+      </section>
+
+      <!-- Right: Supporters -->
+      <section class="card">
+        <div class="inner">
+          <p class="kicker">支持者团子墙</p>
+          <p class="big">每一个名字，都在让au历画得更有意义。</p>
+          <p class="bubbleHint">点击团子查看昵称，团子的手感很Q弹。</p>
+
+          <div class="bubbleStage" id="bubbleStage" aria-label="supporters bubbles stage"></div>
+
+          <footer>
+            <div class="fine">
+              在“支持进度”中有更多交互按钮~
+            </div>
+          </footer>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // ====== Config ======
+    // English comments only.
+
+    // Change these two numbers:
+    const GOAL_AMOUNT = 300;      // total target
+    const CURRENT_AMOUNT = 212;   // current amount
+
+    // Supporters data:
+    const SUPPORTERS = [
+      { name: "想吃汤圆的饺子", avatar: "https://i1.hdslb.com/bfs/face/a8691c79845e2d29b06430d57941159fb7e36e0b.jpg" },
+      { name: "无名甲烷菌", avatar: "https://i1.hdslb.com/bfs/face/b1f17bf1e0232102cd40e96e0e2d1250c9dfc589.jpg" },
+      { name: "楠蝻难喃南", avatar: "https://i1.hdslb.com/bfs/face/ce4a0e0e0074f03df373a937c54dba766bb92673.jpg" },
+      { name: "魔王降临嗷呜", avatar: "https://i1.hdslb.com/bfs/face/b683c534c3b67f65642ef24b72e320f01d5051fe.jpg" },
+      { name: "OhBlank", avatar: "https://i1.hdslb.com/bfs/face/a3ee8977ca9b390a2ad5fb9f594a3ed26c7f5888.jpg" },
+      { name: "25105671762_bili", avatar: "https://i1.hdslb.com/bfs/face/5564f49a7a39704bb52065e7c1913d648ef519ee.jpg" },
+      { name: "羽衣夜行", avatar: "https://i1.hdslb.com/bfs/face/e103a088f3da6397971266480e9626e577c9a082.jpg" },
+      { name: "一只羊牛奶", avatar: "https://i1.hdslb.com/bfs/face/6ba627f8e053d94e94247c476063cb64a2f21267.jpg" },
+      { name: "忆雨人思绘", avatar: "https://i1.hdslb.com/bfs/face/6134364a74a99f7e7ee044b350528593adc3f4b0.jpg" },
+      { name: "幻灵洛伊", avatar: "https://i1.hdslb.com/bfs/face/cde922dd3730c12e9f65cff9e0c15ff7056b3d8e.webp" },
+      { name: "我永远喜欢Aukiu", avatar: "https://i1.hdslb.com/bfs/face/2787d4497fc5121647ad9e781ecd058eb889e664.jpg" },
+      { name: "fufu党", avatar: "https://i1.hdslb.com/bfs/face/2620faf5366d484e89b586e6ff376b9c4588bb4a.jpg" },
+    ];
+
+    // ====== State ======
+    const state = {
+      goal: GOAL_AMOUNT,
+      current: CURRENT_AMOUNT,
+    };
+
+    // ====== Helpers ======
+    const $ = (sel) => document.querySelector(sel);
+
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+    function money(n){
+      return "¥" + Math.round(n).toString();
+    }
+
+    function toast(msg){
+      const t = $("#toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      window.clearTimeout(toast._timer);
+      toast._timer = window.setTimeout(() => t.classList.remove("show"), 1200);
+    }
+
+    // A tiny spring-ish animation for progress (no library).
+    function animateProgress(targetPct){
+      const fill = $("#fill");
+      const duration = 720; // ms
+      const start = performance.now();
+      const startWidth = parseFloat(fill.style.width || "0") || 0;
+      const endWidth = targetPct;
+
+      function easeOutBack(x){
+        const c1 = 1.70158;
+        const c3 = c1 + 1;
+        return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+      }
+
+      function frame(now){
+        const t = clamp((now - start) / duration, 0, 1);
+        const eased = easeOutBack(t);
+        const w = startWidth + (endWidth - startWidth) * eased;
+        fill.style.width = clamp(w, 0, 100).toFixed(2) + "%";
+
+        // Slight scale squeeze for "Q弹"
+        const squeeze = 1 + (Math.sin(t * Math.PI) * 0.04);
+        fill.style.transform = "scaleY(" + squeeze.toFixed(3) + ")";
+
+        if (t < 1) requestAnimationFrame(frame);
+        else fill.style.transform = "scaleY(1)";
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // ====== Progress UI ======
+    function updateProgressUI(animate){
+      const goal = Math.max(1, state.goal);
+      const current = clamp(state.current, 0, goal);
+      const remain = Math.max(0, goal - current);
+      const pct = clamp((current / goal) * 100, 0, 100);
+
+      $("#progressNums").textContent = `${money(current)} / ${money(goal)}`;
+      $("#deltaText").textContent = `距离完成：${money(remain)}`;
+      $("#percentText").textContent = `${pct.toFixed(1)}%`;
+
+      if (animate) animateProgress(pct);
+      else $("#fill").style.width = pct.toFixed(2) + "%";
+    }
+
+    // ====== Bubble field ======
+    function buildBubbles(){
+      const stage = $("#bubbleStage");
+      stage.innerHTML = "";
+
+      const rect = stage.getBoundingClientRect();
+      const W = rect.width;
+      const H = rect.height;
+
+      SUPPORTERS.forEach((sp) => {
+        const b = document.createElement("div");
+        b.className = "bubble";
+
+        const img = document.createElement("img");
+        img.className = "avatar";
+        img.alt = sp.name;
+        img.src = sp.avatar;
+
+        const name = document.createElement("div");
+        name.className = "bubbleName";
+        name.textContent = sp.name;
+
+        b.appendChild(img);
+        b.appendChild(name);
+
+        // Randomized orbit params.
+        const baseX = Math.random() * (W - 90) + 12;
+        const baseY = Math.random() * (H - 110) + 18;
+        const ampX = 14 + Math.random() * 26;
+        const ampY = 10 + Math.random() * 22;
+        const speed = 0.6 + Math.random() * 0.9;
+        const phase = Math.random() * Math.PI * 2;
+
+        b._motion = { baseX, baseY, ampX, ampY, speed, phase };
+        b.style.left = baseX + "px";
+        b.style.top = baseY + "px";
+
+        // Click behavior: pop + toast.
+        b.addEventListener("click", () => {
+          toast("支持者：" + sp.name);
+          b.animate(
+            [
+              { transform: "scale(1) translateY(0px)" },
+              { transform: "scale(1.12) translateY(-4px)" },
+              { transform: "scale(0.96) translateY(2px)" },
+              { transform: "scale(1.02) translateY(-1px)" },
+              { transform: "scale(1) translateY(0px)" },
+            ],
+            { duration: 520, easing: "cubic-bezier(.2,.9,.2,1)" }
+          );
+        });
+
+        stage.appendChild(b);
+      });
+
+      startBubbleLoop();
+    }
+
+    let bubbleRAF = 0;
+    function startBubbleLoop(){
+      cancelAnimationFrame(bubbleRAF);
+
+      const stage = $("#bubbleStage");
+      const bubbles = Array.from(stage.querySelectorAll(".bubble"));
+      const rect = stage.getBoundingClientRect();
+      const W = rect.width;
+      const H = rect.height;
+
+      const t0 = performance.now();
+
+      function loop(now){
+        const t = (now - t0) / 1000;
+
+        bubbles.forEach((b) => {
+          const m = b._motion;
+          const x = m.baseX + Math.sin(t * m.speed + m.phase) * m.ampX;
+          const y = m.baseY + Math.cos(t * m.speed * 0.9 + m.phase) * m.ampY;
+
+          const bx = (x + W) % W;
+          const by = (y + H) % H;
+
+          b.style.transform = `translate3d(${(bx - m.baseX).toFixed(2)}px, ${(by - m.baseY).toFixed(2)}px, 0)`;
+        });
+
+        bubbleRAF = requestAnimationFrame(loop);
+      }
+
+      bubbleRAF = requestAnimationFrame(loop);
+    }
+
+    function shuffleBubbles(){
+      const stage = $("#bubbleStage");
+      const rect = stage.getBoundingClientRect();
+      const W = rect.width;
+      const H = rect.height;
+
+      Array.from(stage.querySelectorAll(".bubble")).forEach((b) => {
+        const m = b._motion;
+        m.baseX = Math.random() * (W - 90) + 12;
+        m.baseY = Math.random() * (H - 110) + 18;
+        m.ampX = 14 + Math.random() * 26;
+        m.ampY = 10 + Math.random() * 22;
+        m.speed = 0.6 + Math.random() * 0.9;
+        m.phase = Math.random() * Math.PI * 2;
+        b.style.left = m.baseX + "px";
+        b.style.top = m.baseY + "px";
+      });
+
+      toast("团子已重排");
+    }
+
+    // ====== Buttons ======
+    $("#bumpBtn").addEventListener("click", () => {
+      const wrap = document.querySelector(".progressWrap");
+      wrap.animate(
+        [
+          { transform: "translateY(0px) scale(1)" },
+          { transform: "translateY(-3px) scale(1.01)" },
+          { transform: "translateY(2px) scale(0.995)" },
+          { transform: "translateY(0px) scale(1)" },
+        ],
+        { duration: 520, easing: "cubic-bezier(.2,.9,.2,1)" }
+      );
+
+      const pct = clamp((Math.min(state.current, state.goal) / Math.max(1, state.goal)) * 100, 0, 100);
+      animateProgress(pct);
+      toast("捏了一下");
+    });
+
+    $("#shuffleBtn").addEventListener("click", shuffleBubbles);
+
+    // ====== Init ======
+    function init(){
+      updateProgressUI(true);
+      buildBubbles();
+
+      window.addEventListener("resize", () => {
+        buildBubbles();
+      });
+    }
+    init();
+  </script>
+</body>
+</html>
